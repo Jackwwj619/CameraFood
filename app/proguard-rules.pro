@@ -1,0 +1,4 @@
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.caloriesnap.data.** { *; }
+-keep class com.caloriesnap.domain.model.** { *; }

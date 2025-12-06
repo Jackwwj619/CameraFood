@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">卡路里快拍</string>
+    <!-- Navigation -->
+    <string name="nav_home">首页</string>
+    <string name="nav_history">记录</string>
+    <string name="nav_statistics">统计</string>
+    <string name="nav_profile">我的</string>
+    <!-- Home -->
+    <string name="today_intake">今日摄入</string>
+    <string name="remaining">剩余 %d kcal</string>
+    <string name="breakfast">早餐</string>
+    <string name="lunch">午餐</string>
+    <string name="dinner">晚餐</string>
+    <string name="snack">加餐</string>
+    <string name="select_meal">选择餐次</string>
+    <!-- Nutrients -->
+    <string name="protein">蛋白质</string>
+    <string name="carbs">碳水</string>
+    <string name="fat">脂肪</string>
+    <!-- Profile -->
+    <string name="body_data">身体数据</string>
+    <string name="energy_calc">能量计算</string>
+    <string name="weight_records">体重记录</string>
+    <string name="no_records">暂无记录</string>
+    <string name="gender">性别</string>
+    <string name="male">男</string>
+    <string name="female">女</string>
+    <string name="age">年龄</string>
+    <string name="height">身高</string>
+    <string name="weight">体重</string>
+    <string name="activity_level">活动水平</string>
+    <string name="goal">目标</string>
+    <string name="lose">减脂</string>
+    <string name="maintain">维持</string>
+    <string name="gain">增肌</string>
+    <string name="calorie_adjustment">热量缺口/盈余</string>
+    <!-- Settings -->
+    <string name="settings">设置</string>
+    <string name="ai_recognition">AI识别功能</string>
+    <string name="api_preset">API预设</string>
+    <string name="save_config">保存配置</string>
+    <string name="test_connection">测试连接</string>
+    <string name="data_management">数据管理</string>
+    <string name="export_data">导出数据</string>
+    <string name="import_data">导入数据</string>
+    <string name="appearance">外观</string>
+    <string name="theme_mode">主题模式</string>
+    <string name="theme_system">跟随系统</string>
+    <string name="theme_light">浅色</string>
+    <string name="theme_dark">深色</string>
+    <string name="about">关于</string>
+    <string name="version">版本</string>
+    <!-- Statistics -->
+    <string name="weekly_stats">周统计</string>
+    <string name="monthly_stats">月统计</string>
+    <string name="weekly_calories">本周热量摄入</string>
+    <string name="monthly_calories">本月热量趋势</string>
+    <string name="achieved_days">达标天数</string>
+    <string name="completion_rate">完成率</string>
+    <string name="nutrient_distribution">营养素分布</string>
+    <string name="top_foods">常吃食物 TOP5</string>
+    <string name="ai_report">AI周报</string>
+    <string name="generate">生成</string>
+    <!-- Common -->
+    <string name="add">添加</string>
+    <string name="delete">删除</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="back">返回</string>
+    <string name="search">搜索</string>
+    <string name="favorites">收藏</string>
+    <string name="recent">最近</string>
+</resources>
