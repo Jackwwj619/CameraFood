@@ -2,6 +2,7 @@ package com.caloriesnap;
 
 import com.caloriesnap.di.AppModule;
 import com.caloriesnap.presentation.viewmodel.AddFoodViewModel_HiltModules;
+import com.caloriesnap.presentation.viewmodel.ExerciseViewModel_HiltModules;
 import com.caloriesnap.presentation.viewmodel.HistoryViewModel_HiltModules;
 import com.caloriesnap.presentation.viewmodel.HomeViewModel_HiltModules;
 import com.caloriesnap.presentation.viewmodel.ProfileViewModel_HiltModules;
@@ -161,6 +162,7 @@ public final class CalorieSnapApp_HiltComponents {
           AddFoodViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class,
+          ExerciseViewModel_HiltModules.KeyModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HistoryViewModel_HiltModules.KeyModule.class,
           HomeViewModel_HiltModules.KeyModule.class,
@@ -204,6 +206,7 @@ public final class CalorieSnapApp_HiltComponents {
   @Subcomponent(
       modules = {
           AddFoodViewModel_HiltModules.BindsModule.class,
+          ExerciseViewModel_HiltModules.BindsModule.class,
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
           HistoryViewModel_HiltModules.BindsModule.class,
           HomeViewModel_HiltModules.BindsModule.class,

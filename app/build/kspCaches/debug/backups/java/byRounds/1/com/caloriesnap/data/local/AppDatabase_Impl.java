@@ -11,6 +11,8 @@ import androidx.room.util.DBUtil;
 import androidx.room.util.TableInfo;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import com.caloriesnap.data.local.dao.ExerciseRecordDao;
+import com.caloriesnap.data.local.dao.ExerciseRecordDao_Impl;
 import com.caloriesnap.data.local.dao.FoodDao;
 import com.caloriesnap.data.local.dao.FoodDao_Impl;
 import com.caloriesnap.data.local.dao.FoodRecordDao;
@@ -42,18 +44,21 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile RecentFoodDao _recentFoodDao;
 
+  private volatile ExerciseRecordDao _exerciseRecordDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `food_records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `mealType` TEXT NOT NULL, `foodName` TEXT NOT NULL, `weight` REAL NOT NULL, `calories` REAL NOT NULL, `protein` REAL NOT NULL, `carbs` REAL NOT NULL, `fat` REAL NOT NULL, `imageUri` TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `weight_records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `weight` REAL NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `foods` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `calories` REAL NOT NULL, `protein` REAL NOT NULL, `carbs` REAL NOT NULL, `fat` REAL NOT NULL, `isCustom` INTEGER NOT NULL, `isFavorite` INTEGER NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `recent_foods` (`foodId` INTEGER NOT NULL, `usedAt` INTEGER NOT NULL, PRIMARY KEY(`foodId`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `exercise_records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `exerciseName` TEXT NOT NULL, `duration` INTEGER NOT NULL, `caloriesBurned` REAL NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5a8081309de74e50455ebe21cf679178')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4c94fbdc645fea74e815221f25a4a452')");
       }
 
       @Override
@@ -62,6 +67,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("DROP TABLE IF EXISTS `weight_records`");
         db.execSQL("DROP TABLE IF EXISTS `foods`");
         db.execSQL("DROP TABLE IF EXISTS `recent_foods`");
+        db.execSQL("DROP TABLE IF EXISTS `exercise_records`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -168,9 +174,24 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoRecentFoods + "\n"
                   + " Found:\n" + _existingRecentFoods);
         }
+        final HashMap<String, TableInfo.Column> _columnsExerciseRecords = new HashMap<String, TableInfo.Column>(5);
+        _columnsExerciseRecords.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsExerciseRecords.put("date", new TableInfo.Column("date", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsExerciseRecords.put("exerciseName", new TableInfo.Column("exerciseName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsExerciseRecords.put("duration", new TableInfo.Column("duration", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsExerciseRecords.put("caloriesBurned", new TableInfo.Column("caloriesBurned", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysExerciseRecords = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesExerciseRecords = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoExerciseRecords = new TableInfo("exercise_records", _columnsExerciseRecords, _foreignKeysExerciseRecords, _indicesExerciseRecords);
+        final TableInfo _existingExerciseRecords = TableInfo.read(db, "exercise_records");
+        if (!_infoExerciseRecords.equals(_existingExerciseRecords)) {
+          return new RoomOpenHelper.ValidationResult(false, "exercise_records(com.caloriesnap.data.local.entity.ExerciseRecordEntity).\n"
+                  + " Expected:\n" + _infoExerciseRecords + "\n"
+                  + " Found:\n" + _existingExerciseRecords);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "5a8081309de74e50455ebe21cf679178", "c6a1ed4ae393a0a4d620ad0a26ae527d");
+    }, "4c94fbdc645fea74e815221f25a4a452", "6712614bded5cc04196c4f77b4b0e802");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -181,7 +202,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "food_records","weight_records","foods","recent_foods");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "food_records","weight_records","foods","recent_foods","exercise_records");
   }
 
   @Override
@@ -194,6 +215,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       _db.execSQL("DELETE FROM `weight_records`");
       _db.execSQL("DELETE FROM `foods`");
       _db.execSQL("DELETE FROM `recent_foods`");
+      _db.execSQL("DELETE FROM `exercise_records`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -212,6 +234,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     _typeConvertersMap.put(WeightRecordDao.class, WeightRecordDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(FoodDao.class, FoodDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(RecentFoodDao.class, RecentFoodDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(ExerciseRecordDao.class, ExerciseRecordDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -282,6 +305,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _recentFoodDao = new RecentFoodDao_Impl(this);
         }
         return _recentFoodDao;
+      }
+    }
+  }
+
+  @Override
+  public ExerciseRecordDao exerciseRecordDao() {
+    if (_exerciseRecordDao != null) {
+      return _exerciseRecordDao;
+    } else {
+      synchronized(this) {
+        if(_exerciseRecordDao == null) {
+          _exerciseRecordDao = new ExerciseRecordDao_Impl(this);
+        }
+        return _exerciseRecordDao;
       }
     }
   }

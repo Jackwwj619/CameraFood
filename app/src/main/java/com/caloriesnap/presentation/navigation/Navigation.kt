@@ -1,5 +1,7 @@
 package com.caloriesnap.presentation.navigation
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -26,6 +28,7 @@ sealed class Screen(val route: String) {
     object Statistics : Screen("statistics")
     object Profile : Screen("profile")
     object Settings : Screen("settings")
+    object Exercise : Screen("exercise")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +60,15 @@ fun AppNavigation() {
             }
         }
     ) { padding ->
-        NavHost(navController, Screen.Home.route, Modifier.padding(padding)) {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(padding),
+            enterTransition = { fadeIn(tween(300)) + slideInHorizontally(initialOffsetX = { 30 }, animationSpec = tween(300)) },
+            exitTransition = { fadeOut(tween(200)) },
+            popEnterTransition = { fadeIn(tween(300)) },
+            popExitTransition = { fadeOut(tween(200)) + slideOutHorizontally(targetOffsetX = { 30 }, animationSpec = tween(300)) }
+        ) {
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.Camera.route, listOf(navArgument("mealType") { type = NavType.StringType })) {
                 CameraScreen(navController, it.arguments?.getString("mealType") ?: "BREAKFAST")
@@ -72,6 +83,7 @@ fun AppNavigation() {
             composable(Screen.Statistics.route) { StatisticsScreen() }
             composable(Screen.Profile.route) { ProfileScreen(navController) }
             composable(Screen.Settings.route) { SettingsScreen(navController) }
+            composable(Screen.Exercise.route) { ExerciseScreen(navController) }
         }
     }
 }

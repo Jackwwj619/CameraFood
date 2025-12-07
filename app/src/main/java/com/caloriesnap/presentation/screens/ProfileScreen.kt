@@ -1,5 +1,6 @@
 package com.caloriesnap.presentation.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -10,13 +11,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.caloriesnap.domain.model.*
+import com.caloriesnap.presentation.components.GlassCard
 import com.caloriesnap.presentation.navigation.Screen
+import com.caloriesnap.presentation.theme.*
 import com.caloriesnap.presentation.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,14 +33,21 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
     var editMode by remember { mutableStateOf(false) }
     var profile by remember(state.profile) { mutableStateOf(state.profile) }
 
-    Scaffold(topBar = {
-        TopAppBar(title = { Text("我的") }, actions = {
-            IconButton(onClick = { navController.navigate(Screen.Settings.route) }) { Icon(Icons.Default.Settings, "设置") }
-        })
-    }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState())) {
-            Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp)) {
+    Box(
+        Modifier.fillMaxSize().background(
+            Brush.verticalGradient(
+                colors = listOf(ApplePink.copy(alpha = 0.1f), AppleIndigo.copy(alpha = 0.08f), MaterialTheme.colorScheme.background)
+            )
+        )
+    ) {
+        Scaffold(containerColor = Color.Transparent) { padding ->
+            Column(Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState())) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Text("我的", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    IconButton(onClick = { navController.navigate(Screen.Settings.route) }) { Icon(Icons.Default.Settings, "设置", tint = MaterialTheme.colorScheme.outline) }
+                }
+                Spacer(Modifier.height(16.dp))
+                GlassCard(Modifier.fillMaxWidth()) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text("身体数据", style = MaterialTheme.typography.titleMedium)
                         IconButton(onClick = { editMode = !editMode }) { Icon(if (editMode) Icons.Default.Check else Icons.Default.Edit, "编辑") }
@@ -48,24 +61,18 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                         ProfileInfo(state.profile)
                     }
                 }
-            }
-            Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(16.dp))
 
-            Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp)) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Text("能量计算", style = MaterialTheme.typography.titleMedium)
-                    }
+                GlassCard(Modifier.fillMaxWidth()) {
+                    Text("能量计算", style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(12.dp))
                     InfoRow("基础代谢(BMR)", "${state.bmr.toInt()} kcal")
                     InfoRow("每日消耗(TDEE)", "${state.tdee.toInt()} kcal")
                     InfoRow("目标热量", "${state.targetCalories.toInt()} kcal")
                 }
-            }
-            Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(16.dp))
 
-            Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp)) {
+                GlassCard(Modifier.fillMaxWidth()) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text("体重记录", style = MaterialTheme.typography.titleMedium)
                         IconButton(onClick = { showWeightDialog = true }) { Icon(Icons.Default.Add, "添加") }

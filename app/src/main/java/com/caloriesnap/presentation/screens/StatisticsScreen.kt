@@ -1,21 +1,27 @@
 package com.caloriesnap.presentation.screens
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.caloriesnap.presentation.components.GlassCard
+import com.caloriesnap.presentation.theme.*
 import com.caloriesnap.presentation.viewmodel.StatisticsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,8 +30,17 @@ fun StatisticsScreen(viewModel: StatisticsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableIntStateOf(0) }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("统计") }) }) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState())) {
+    Box(
+        Modifier.fillMaxSize().background(
+            Brush.verticalGradient(
+                colors = listOf(AppleOrange.copy(alpha = 0.12f), AppleTeal.copy(alpha = 0.08f), MaterialTheme.colorScheme.background)
+            )
+        )
+    ) {
+        Scaffold(containerColor = Color.Transparent) { padding ->
+            Column(Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState())) {
+                Text("统计", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(16.dp))
             TabRow(selectedTab) {
                 Tab(selectedTab == 0, onClick = { selectedTab = 0 }) { Text("周统计", Modifier.padding(12.dp)) }
                 Tab(selectedTab == 1, onClick = { selectedTab = 1 }) { Text("月统计", Modifier.padding(12.dp)) }
@@ -98,9 +113,9 @@ fun StatisticsScreen(viewModel: StatisticsViewModel = hiltViewModel()) {
                     NutrientPieChart(state.totalProtein, state.totalCarbs, state.totalFat)
                     Spacer(Modifier.height(8.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                        NutrientLegend("蛋白质", state.totalProtein, Color(0xFF4CAF50))
-                        NutrientLegend("碳水", state.totalCarbs, Color(0xFF2196F3))
-                        NutrientLegend("脂肪", state.totalFat, Color(0xFFFF9800))
+                        NutrientLegend("蛋白质", state.totalProtein, ProteinColor)
+                        NutrientLegend("碳水", state.totalCarbs, CarbsColor)
+                        NutrientLegend("脂肪", state.totalFat, FatColor)
                     }
                 }
             }
@@ -137,6 +152,7 @@ fun StatisticsScreen(viewModel: StatisticsViewModel = hiltViewModel()) {
                 }
             }
         }
+        }
     }
 }
 
@@ -172,7 +188,7 @@ fun NutrientPieChart(protein: Float, carbs: Float, fat: Float) {
 
     Canvas(Modifier.size(120.dp).padding(8.dp)) {
         var startAngle = -90f
-        listOf(protein to Color(0xFF4CAF50), carbs to Color(0xFF2196F3), fat to Color(0xFFFF9800)).forEach { (value, color) ->
+        listOf(protein to ProteinColor, carbs to CarbsColor, fat to FatColor).forEach { (value, color) ->
             val sweep = (value / total) * 360f
             drawArc(color, startAngle, sweep, useCenter = true, size = Size(size.width, size.height))
             startAngle += sweep

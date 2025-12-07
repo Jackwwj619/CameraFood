@@ -16,10 +16,13 @@ import javax.inject.Singleton
 object AppModule {
     @Provides @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "caloriesnap.db").build()
+        Room.databaseBuilder(context, AppDatabase::class.java, "caloriesnap.db")
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides fun provideFoodRecordDao(db: AppDatabase): FoodRecordDao = db.foodRecordDao()
     @Provides fun provideWeightRecordDao(db: AppDatabase): WeightRecordDao = db.weightRecordDao()
     @Provides fun provideFoodDao(db: AppDatabase): FoodDao = db.foodDao()
     @Provides fun provideRecentFoodDao(db: AppDatabase): RecentFoodDao = db.recentFoodDao()
+    @Provides fun provideExerciseRecordDao(db: AppDatabase): ExerciseRecordDao = db.exerciseRecordDao()
 }

@@ -1,5 +1,7 @@
 package com.caloriesnap.presentation.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -16,7 +19,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.caloriesnap.domain.model.MealType
+import com.caloriesnap.presentation.components.*
 import com.caloriesnap.presentation.navigation.Screen
+import com.caloriesnap.presentation.theme.*
 import com.caloriesnap.presentation.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,32 +30,78 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showMealDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = { TopAppBar(title = { Text("CalorieSnap") }, actions = {
-            IconButton(onClick = { navController.navigate(Screen.Settings.route) }) { Icon(Icons.Default.Settings, "设置") }
-        }) },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { showMealDialog = true }) { Icon(Icons.Default.Add, "添加") }
-        }
-    ) { padding ->
-        LazyColumn(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
+    Box(
+        Modifier.fillMaxSize().background(
+            Brush.verticalGradient(
+                colors = listOf(
+                    AppleGreen.copy(alpha = 0.15f),
+                    AppleTeal.copy(alpha = 0.1f),
+                    MaterialTheme.colorScheme.background
+                )
+            )
+        )
+    ) {
+        Scaffold(
+            containerColor = Color.Transparent,
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { showMealDialog = true },
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) { Icon(Icons.Default.Add, "添加", tint = Color.White) }
+            }
+        ) { padding ->
+            LazyColumn(
+                Modifier.fillMaxSize().padding(padding),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+            // 顶部标题栏
+            item {
+                Row(
+                    Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("今日饮食", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    IconButton(onClick = { navController.navigate(Screen.Settings.route) }) {
+                        Icon(Icons.Default.Settings, "设置", tint = MaterialTheme.colorScheme.outline)
+                    }
+                }
+            }
+            // 热量卡片
             item {
                 CalorieCard(state.totalCalories, state.targetCalories, state.totalProtein, state.totalCarbs, state.totalFat)
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(12.dp))
             }
+            // 运动记录入口
+            item {
+                GlassCard(Modifier.fillMaxWidth().clickable { navController.navigate(Screen.Exercise.route) }) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.FitnessCenter, "运动", tint = AppleOrange, modifier = Modifier.size(24.dp))
+                            Spacer(Modifier.width(12.dp))
+                            Column {
+                                Text("运动记录", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                                Text("记录今日运动消耗", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
+                            }
+                        }
+                        Icon(Icons.Default.ChevronRight, "进入", tint = MaterialTheme.colorScheme.outline)
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
+            }
+            // 餐次列表
             MealType.entries.forEach { meal ->
                 val mealRecords = state.records.filter { it.mealType == meal }
                 val mealName = when (meal) { MealType.BREAKFAST -> "早餐"; MealType.LUNCH -> "午餐"; MealType.DINNER -> "晚餐"; MealType.SNACK -> "加餐" }
+                val mealIcon = when (meal) { MealType.BREAKFAST -> Icons.Default.WbSunny; MealType.LUNCH -> Icons.Default.LightMode; MealType.DINNER -> Icons.Default.DarkMode; MealType.SNACK -> Icons.Default.Cookie }
                 item {
-                    MealSection(mealName, mealRecords.sumOf { it.calories.toDouble() }.toFloat()) {
+                    MealCard(mealName, mealIcon, mealRecords.sumOf { it.calories.toDouble() }.toFloat(), mealRecords) {
                         navController.navigate(Screen.AddFood.createRoute(meal.name))
                     }
+                    Spacer(Modifier.height(8.dp))
                 }
-                items(mealRecords) { record ->
-                    FoodItem(record.foodName, record.weight, record.calories) { viewModel.deleteRecord(record.id) }
-                }
-                item { Spacer(Modifier.height(8.dp)) }
             }
+        }
         }
     }
 
@@ -74,28 +125,27 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
 
 @Composable
 fun CalorieCard(consumed: Float, target: Float, protein: Float, carbs: Float, fat: Float) {
-    val progress = if (target > 0) (consumed / target).coerceIn(0f, 1f) else 0f
+    val progress = if (target > 0) (consumed / target).coerceIn(0f, 1.5f) else 0f
     val remaining = (target - consumed).coerceAtLeast(0f)
 
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    GlassCard(Modifier.fillMaxWidth()) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("今日摄入", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
             Box(contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(progress = { progress }, modifier = Modifier.size(120.dp), strokeWidth = 8.dp,
-                    color = if (progress > 1f) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+                AnimatedCircularProgress(progress = progress)
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("${consumed.toInt()}", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    AnimatedNumber(targetValue = consumed.toInt())
                     Text("/ ${target.toInt()} kcal", style = MaterialTheme.typography.bodySmall)
                 }
             }
-            Spacer(Modifier.height(8.dp))
-            Text("剩余 ${remaining.toInt()} kcal", color = if (remaining > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
             Spacer(Modifier.height(12.dp))
+            Text("剩余 ${remaining.toInt()} kcal", color = if (remaining > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
+            Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                NutrientInfo("蛋白质", protein, Color(0xFF4CAF50))
-                NutrientInfo("碳水", carbs, Color(0xFF2196F3))
-                NutrientInfo("脂肪", fat, Color(0xFFFF9800))
+                NutrientInfo("蛋白质", protein, ProteinColor)
+                NutrientInfo("碳水", carbs, CarbsColor)
+                NutrientInfo("脂肪", fat, FatColor)
             }
         }
     }
@@ -110,20 +160,39 @@ fun NutrientInfo(name: String, value: Float, color: Color) {
 }
 
 @Composable
-fun MealSection(name: String, calories: Float, onAdd: () -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.width(8.dp))
-            Text("${calories.toInt()} kcal", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
+fun MealCard(name: String, icon: androidx.compose.ui.graphics.vector.ImageVector, calories: Float, records: List<com.caloriesnap.domain.model.FoodRecord>, onAdd: () -> Unit) {
+    GlassCard(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(icon, name, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+                Spacer(Modifier.width(12.dp))
+                Column {
+                    Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text("${calories.toInt()} kcal", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
+                }
+            }
+            IconButton(onClick = onAdd) {
+                Icon(Icons.Default.AddCircle, "添加", tint = MaterialTheme.colorScheme.primary)
+            }
         }
-        IconButton(onClick = onAdd) { Icon(Icons.Default.Add, "添加") }
+        if (records.isNotEmpty()) {
+            Spacer(Modifier.height(12.dp))
+            records.forEach { record ->
+                Row(
+                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(record.foodName, style = MaterialTheme.typography.bodyMedium)
+                    Text("${record.calories.toInt()} kcal", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
+                }
+            }
+        }
     }
 }
 
 @Composable
 fun FoodItem(name: String, weight: Float, calories: Float, onDelete: () -> Unit) {
-    Card(Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
+    Card(Modifier.fillMaxWidth().padding(vertical = 2.dp), shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)) {
         Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(name, fontWeight = FontWeight.Medium)

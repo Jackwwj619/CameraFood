@@ -96,3 +96,27 @@ interface RecentFoodDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(recent: RecentFoodEntity)
 }
+
+@Dao
+interface ExerciseRecordDao {
+    @Query("SELECT * FROM exercise_records WHERE date = :date ORDER BY id DESC")
+    fun getByDate(date: String): Flow<List<ExerciseRecordEntity>>
+
+    @Query("SELECT * FROM exercise_records WHERE date BETWEEN :start AND :end")
+    fun getByDateRange(start: String, end: String): Flow<List<ExerciseRecordEntity>>
+
+    @Insert
+    suspend fun insert(record: ExerciseRecordEntity): Long
+
+    @Query("DELETE FROM exercise_records WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
+    @Query("SELECT * FROM exercise_records")
+    suspend fun getAll(): List<ExerciseRecordEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(records: List<ExerciseRecordEntity>)
+
+    @Query("DELETE FROM exercise_records")
+    suspend fun deleteAll()
+}

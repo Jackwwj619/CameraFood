@@ -42,6 +42,32 @@ data class FoodRecord(
 
 data class WeightRecord(val id: Long = 0, val date: String, val weight: Float)
 
+data class ExerciseRecord(
+    val id: Long = 0,
+    val date: String,
+    val exerciseName: String,
+    val duration: Int, // 分钟
+    val caloriesBurned: Float
+)
+
+enum class ExerciseType(val displayName: String, val caloriesPerMinute: Float) {
+    WALKING("步行", 4f),
+    RUNNING("跑步", 10f),
+    CYCLING("骑行", 8f),
+    SWIMMING("游泳", 9f),
+    YOGA("瑜伽", 3f),
+    STRENGTH("力量训练", 6f),
+    HIIT("HIIT", 12f),
+    DANCING("跳舞", 7f),
+    BASKETBALL("篮球", 8f),
+    FOOTBALL("足球", 9f),
+    BADMINTON("羽毛球", 7f),
+    TENNIS("网球", 8f),
+    JUMP_ROPE("跳绳", 11f),
+    CLIMBING("爬山", 8f),
+    OTHER("其他", 5f)
+}
+
 data class DailySummary(
     val totalCalories: Float,
     val totalProtein: Float,

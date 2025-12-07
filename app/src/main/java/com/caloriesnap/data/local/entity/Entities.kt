@@ -40,3 +40,12 @@ data class RecentFoodEntity(
     @PrimaryKey val foodId: Long,
     val usedAt: Long
 )
+
+@Entity(tableName = "exercise_records")
+data class ExerciseRecordEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val date: String,
+    val exerciseName: String,
+    val duration: Int,
+    val caloriesBurned: Float
+)

@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 import com.caloriesnap.data.local.AppDatabase;
 import com.caloriesnap.data.local.PreferencesManager;
+import com.caloriesnap.data.local.dao.ExerciseRecordDao;
 import com.caloriesnap.data.local.dao.FoodDao;
 import com.caloriesnap.data.local.dao.FoodRecordDao;
 import com.caloriesnap.data.local.dao.RecentFoodDao;
@@ -16,6 +17,7 @@ import com.caloriesnap.data.remote.AiService;
 import com.caloriesnap.data.repository.FoodRepository;
 import com.caloriesnap.di.AppModule;
 import com.caloriesnap.di.AppModule_ProvideDatabaseFactory;
+import com.caloriesnap.di.AppModule_ProvideExerciseRecordDaoFactory;
 import com.caloriesnap.di.AppModule_ProvideFoodDaoFactory;
 import com.caloriesnap.di.AppModule_ProvideFoodRecordDaoFactory;
 import com.caloriesnap.di.AppModule_ProvideRecentFoodDaoFactory;
@@ -23,6 +25,8 @@ import com.caloriesnap.di.AppModule_ProvideWeightRecordDaoFactory;
 import com.caloriesnap.domain.usecase.CalorieCalculator;
 import com.caloriesnap.presentation.viewmodel.AddFoodViewModel;
 import com.caloriesnap.presentation.viewmodel.AddFoodViewModel_HiltModules_KeyModule_ProvideFactory;
+import com.caloriesnap.presentation.viewmodel.ExerciseViewModel;
+import com.caloriesnap.presentation.viewmodel.ExerciseViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.caloriesnap.presentation.viewmodel.HistoryViewModel;
 import com.caloriesnap.presentation.viewmodel.HistoryViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.caloriesnap.presentation.viewmodel.HomeViewModel;
@@ -402,7 +406,7 @@ public final class DaggerCalorieSnapApp_HiltComponents_SingletonC {
 
     @Override
     public Set<String> getViewModelKeys() {
-      return SetBuilder.<String>newSetBuilder(7).add(AddFoodViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(HistoryViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(HomeViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ProfileViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(RecognitionViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(SettingsViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(StatisticsViewModel_HiltModules_KeyModule_ProvideFactory.provide()).build();
+      return SetBuilder.<String>newSetBuilder(8).add(AddFoodViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ExerciseViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(HistoryViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(HomeViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ProfileViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(RecognitionViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(SettingsViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(StatisticsViewModel_HiltModules_KeyModule_ProvideFactory.provide()).build();
     }
 
     @Override
@@ -435,6 +439,8 @@ public final class DaggerCalorieSnapApp_HiltComponents_SingletonC {
 
     private Provider<AddFoodViewModel> addFoodViewModelProvider;
 
+    private Provider<ExerciseViewModel> exerciseViewModelProvider;
+
     private Provider<HistoryViewModel> historyViewModelProvider;
 
     private Provider<HomeViewModel> homeViewModelProvider;
@@ -461,17 +467,18 @@ public final class DaggerCalorieSnapApp_HiltComponents_SingletonC {
     private void initialize(final SavedStateHandle savedStateHandleParam,
         final ViewModelLifecycle viewModelLifecycleParam) {
       this.addFoodViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
-      this.historyViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
-      this.homeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
-      this.profileViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
-      this.recognitionViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
-      this.settingsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 5);
-      this.statisticsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 6);
+      this.exerciseViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
+      this.historyViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
+      this.homeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
+      this.profileViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
+      this.recognitionViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 5);
+      this.settingsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 6);
+      this.statisticsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 7);
     }
 
     @Override
     public Map<String, Provider<ViewModel>> getHiltViewModelMap() {
-      return MapBuilder.<String, Provider<ViewModel>>newMapBuilder(7).put("com.caloriesnap.presentation.viewmodel.AddFoodViewModel", ((Provider) addFoodViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.HistoryViewModel", ((Provider) historyViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.HomeViewModel", ((Provider) homeViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.ProfileViewModel", ((Provider) profileViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.RecognitionViewModel", ((Provider) recognitionViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.SettingsViewModel", ((Provider) settingsViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.StatisticsViewModel", ((Provider) statisticsViewModelProvider)).build();
+      return MapBuilder.<String, Provider<ViewModel>>newMapBuilder(8).put("com.caloriesnap.presentation.viewmodel.AddFoodViewModel", ((Provider) addFoodViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.ExerciseViewModel", ((Provider) exerciseViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.HistoryViewModel", ((Provider) historyViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.HomeViewModel", ((Provider) homeViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.ProfileViewModel", ((Provider) profileViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.RecognitionViewModel", ((Provider) recognitionViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.SettingsViewModel", ((Provider) settingsViewModelProvider)).put("com.caloriesnap.presentation.viewmodel.StatisticsViewModel", ((Provider) statisticsViewModelProvider)).build();
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -498,22 +505,25 @@ public final class DaggerCalorieSnapApp_HiltComponents_SingletonC {
           case 0: // com.caloriesnap.presentation.viewmodel.AddFoodViewModel 
           return (T) new AddFoodViewModel(singletonCImpl.foodRepositoryProvider.get());
 
-          case 1: // com.caloriesnap.presentation.viewmodel.HistoryViewModel 
+          case 1: // com.caloriesnap.presentation.viewmodel.ExerciseViewModel 
+          return (T) new ExerciseViewModel(singletonCImpl.exerciseRecordDao());
+
+          case 2: // com.caloriesnap.presentation.viewmodel.HistoryViewModel 
           return (T) new HistoryViewModel(singletonCImpl.foodRepositoryProvider.get());
 
-          case 2: // com.caloriesnap.presentation.viewmodel.HomeViewModel 
+          case 3: // com.caloriesnap.presentation.viewmodel.HomeViewModel 
           return (T) new HomeViewModel(singletonCImpl.foodRepositoryProvider.get(), singletonCImpl.preferencesManagerProvider.get(), new CalorieCalculator());
 
-          case 3: // com.caloriesnap.presentation.viewmodel.ProfileViewModel 
+          case 4: // com.caloriesnap.presentation.viewmodel.ProfileViewModel 
           return (T) new ProfileViewModel(singletonCImpl.preferencesManagerProvider.get(), singletonCImpl.foodRepositoryProvider.get(), new CalorieCalculator());
 
-          case 4: // com.caloriesnap.presentation.viewmodel.RecognitionViewModel 
+          case 5: // com.caloriesnap.presentation.viewmodel.RecognitionViewModel 
           return (T) new RecognitionViewModel(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule), singletonCImpl.aiServiceProvider.get(), singletonCImpl.foodRepositoryProvider.get(), singletonCImpl.preferencesManagerProvider.get());
 
-          case 5: // com.caloriesnap.presentation.viewmodel.SettingsViewModel 
+          case 6: // com.caloriesnap.presentation.viewmodel.SettingsViewModel 
           return (T) new SettingsViewModel(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule), singletonCImpl.preferencesManagerProvider.get(), singletonCImpl.aiServiceProvider.get(), singletonCImpl.foodRepositoryProvider.get());
 
-          case 6: // com.caloriesnap.presentation.viewmodel.StatisticsViewModel 
+          case 7: // com.caloriesnap.presentation.viewmodel.StatisticsViewModel 
           return (T) new StatisticsViewModel(singletonCImpl.foodRepositoryProvider.get(), singletonCImpl.preferencesManagerProvider.get(), new CalorieCalculator(), singletonCImpl.aiServiceProvider.get());
 
           default: throw new AssertionError(id);
@@ -623,6 +633,10 @@ public final class DaggerCalorieSnapApp_HiltComponents_SingletonC {
 
     private RecentFoodDao recentFoodDao() {
       return AppModule_ProvideRecentFoodDaoFactory.provideRecentFoodDao(provideDatabaseProvider.get());
+    }
+
+    private ExerciseRecordDao exerciseRecordDao() {
+      return AppModule_ProvideExerciseRecordDaoFactory.provideExerciseRecordDao(provideDatabaseProvider.get());
     }
 
     @SuppressWarnings("unchecked")
